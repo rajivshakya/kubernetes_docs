@@ -92,6 +92,13 @@ Pods exist, the ReplicaSet Controller creates three Pod objects.
 -   It detects the newly assigned Pods and reads their specifications.
 -   It coordinates with the container runtime to ensure that the
     required containers are created and running.
+    The Kubelet monitors the containers and executes configured health probes:
+
+-   **Startup Probe:** Checks whether the application has started.
+-   **Liveness Probe:** Checks whether the container needs to be restarted.
+-   **Readiness Probe:** Checks whether the application is ready to receive traffic.
+
+When the readiness conditions are satisfied, the Pod is marked Ready.
 
 **Result:** The Kubelet begins preparing the Pods on the assigned Worker
 Nodes.
