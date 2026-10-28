@@ -1,0 +1,257 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-web
+data:
+  index.html: |
+    <!doctype html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>User Service</title>
+      <style>
+        body { font-family: Arial, sans-serif; background: #f3e8ff; margin: 0; }
+        header { background: #7c3aed; color: white; padding: 28px; }
+        main { margin: 35px auto; max-width: 760px; background: white; padding: 28px; border-radius: 12px; }
+        .tag { display: inline-block; background: #ede9fe; padding: 8px 12px; border-radius: 8px; }
+      </style>
+    </head>
+    <body>
+      <header><h1>User Service</h1><p>E-commerce customer account</p></header>
+      <main>
+        <h2>Welcome, Customer!</h2>
+        <p>This is the <strong>User</strong> application running on Kubernetes.</p>
+        <p class="tag">Feature: Profile, address book, and account settings</p>
+        <p>Demo endpoint: /user</p>
+      </main>
+    </body>
+    </html>
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-lb
+  labels:
+    app: user-lb
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: user-lb
+  template:
+    metadata:
+      labels:
+        app: user-lb
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:stable
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: web-content
+              mountPath: /usr/share/nginx/html/index.html
+              subPath: index.html
+              readOnly: true
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 50m
+              memory: 32Mi
+            limits:
+              cpu: 200m
+              memory: 64Mi
+      volumes:
+        - name: web-content
+          configMap:
+            name: user-web
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-lb-svc
+spec:
+  type: LoadBalancer
+  selector:
+    app: user-lb
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: order-web
+data:
+  index.html: |
+    <!doctype html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>Order Service</title>
+      <style>
+        body { font-family: Arial, sans-serif; background: #dbeafe; margin: 0; }
+        header { background: #2563eb; color: white; padding: 28px; }
+        main { margin: 35px auto; max-width: 760px; background: white; padding: 28px; border-radius: 12px; }
+        .tag { display: inline-block; background: #dbeafe; padding: 8px 12px; border-radius: 8px; }
+      </style>
+    </head>
+    <body>
+      <header><h1>Order Service</h1><p>E-commerce order centre</p></header>
+      <main>
+        <h2>Your Orders</h2>
+        <p>This is the <strong>Order</strong> application running on Kubernetes.</p>
+        <p class="tag">Feature: Order history, delivery tracking, and returns</p>
+        <p>Demo endpoint: /order</p>
+      </main>
+    </body>
+    </html>
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-lb
+  labels:
+    app: order-lb
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: order-lb
+  template:
+    metadata:
+      labels:
+        app: order-lb
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:stable
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: web-content
+              mountPath: /usr/share/nginx/html/index.html
+              subPath: index.html
+              readOnly: true
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 50m
+              memory: 32Mi
+            limits:
+              cpu: 200m
+              memory: 64Mi
+      volumes:
+        - name: web-content
+          configMap:
+            name: order-web
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-lb-svc
+spec:
+  type: LoadBalancer
+  selector:
+    app: order-lb
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: payment-web
+data:
+  index.html: |
+    <!doctype html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>Payment Service</title>
+      <style>
+        body { font-family: Arial, sans-serif; background: #dcfce7; margin: 0; }
+        header { background: #15803d; color: white; padding: 28px; }
+        main { margin: 35px auto; max-width: 760px; background: white; padding: 28px; border-radius: 12px; }
+        .tag { display: inline-block; background: #dcfce7; padding: 8px 12px; border-radius: 8px; }
+      </style>
+    </head>
+    <body>
+      <header><h1>Payment Service</h1><p>E-commerce checkout</p></header>
+      <main>
+        <h2>Payment Status: Demo Mode</h2>
+        <p>This is the <strong>Payment</strong> application running on Kubernetes.</p>
+        <p class="tag">Feature: Checkout and payment status (no real transactions)</p>
+        <p>Demo endpoint: /payment</p>
+      </main>
+    </body>
+    </html>
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-lb
+  labels:
+    app: payment-lb
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: payment-lb
+  template:
+    metadata:
+      labels:
+        app: payment-lb
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:stable
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: web-content
+              mountPath: /usr/share/nginx/html/index.html
+              subPath: index.html
+              readOnly: true
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 50m
+              memory: 32Mi
+            limits:
+              cpu: 200m
+              memory: 64Mi
+      volumes:
+        - name: web-content
+          configMap:
+            name: payment-web
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-lb-svc
+spec:
+  type: LoadBalancer
+  selector:
+    app: payment-lb
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80

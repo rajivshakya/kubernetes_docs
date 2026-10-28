@@ -1,0 +1,283 @@
+# Save as: ecommerce-agic.yaml
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-path-config
+data:
+  default.conf: |
+    server {
+      listen 80;
+      server_name _;
+      root /usr/share/nginx/html;
+      index index.html;
+      location / {
+        try_files $uri $uri/ /index.html;
+      }
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-web
+data:
+  index.html: |
+    <!doctype html>
+    <html><head><meta charset="utf-8"><title>User Service</title>
+    <style>body{font-family:Arial;background:#f3e8ff;margin:0}header{background:#7c3aed;color:white;padding:28px}main{margin:35px auto;max-width:760px;background:white;padding:28px;border-radius:12px}</style>
+    </head><body><header><h1>User Service</h1><p>Customer account</p></header>
+    <main><h2>Welcome, Customer!</h2><p>Profile, address book, and account settings.</p><p>Ingress route: /user</p></main></body></html>
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-app
+  labels:
+    app: user-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: user-app
+  template:
+    metadata:
+      labels:
+        app: user-app
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:stable
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: web-content
+              mountPath: /usr/share/nginx/html/index.html
+              subPath: index.html
+              readOnly: true
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: default.conf
+              readOnly: true
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 50m
+              memory: 32Mi
+            limits:
+              cpu: 200m
+              memory: 64Mi
+      volumes:
+        - name: web-content
+          configMap:
+            name: user-web
+        - name: nginx-config
+          configMap:
+            name: nginx-path-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-svc
+spec:
+  type: ClusterIP
+  selector:
+    app: user-app
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: order-web
+data:
+  index.html: |
+    <!doctype html>
+    <html><head><meta charset="utf-8"><title>Order Service</title>
+    <style>body{font-family:Arial;background:#dbeafe;margin:0}header{background:#2563eb;color:white;padding:28px}main{margin:35px auto;max-width:760px;background:white;padding:28px;border-radius:12px}</style>
+    </head><body><header><h1>Order Service</h1><p>Order centre</p></header>
+    <main><h2>Your Orders</h2><p>Order history, delivery tracking, and returns.</p><p>Ingress route: /order</p></main></body></html>
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-app
+  labels:
+    app: order-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: order-app
+  template:
+    metadata:
+      labels:
+        app: order-app
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:stable
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: web-content
+              mountPath: /usr/share/nginx/html/index.html
+              subPath: index.html
+              readOnly: true
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: default.conf
+              readOnly: true
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 50m
+              memory: 32Mi
+            limits:
+              cpu: 200m
+              memory: 64Mi
+      volumes:
+        - name: web-content
+          configMap:
+            name: order-web
+        - name: nginx-config
+          configMap:
+            name: nginx-path-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-svc
+spec:
+  type: ClusterIP
+  selector:
+    app: order-app
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: payment-web
+data:
+  index.html: |
+    <!doctype html>
+    <html><head><meta charset="utf-8"><title>Payment Service</title>
+    <style>body{font-family:Arial;background:#dcfce7;margin:0}header{background:#15803d;color:white;padding:28px}main{margin:35px auto;max-width:760px;background:white;padding:28px;border-radius:12px}</style>
+    </head><body><header><h1>Payment Service</h1><p>Checkout</p></header>
+    <main><h2>Payment Status: Demo Mode</h2><p>Checkout and payment-status page. No real transactions are processed.</p><p>Ingress route: /payment</p></main></body></html>
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-app
+  labels:
+    app: payment-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: payment-app
+  template:
+    metadata:
+      labels:
+        app: payment-app
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:stable
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: web-content
+              mountPath: /usr/share/nginx/html/index.html
+              subPath: index.html
+              readOnly: true
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: default.conf
+              readOnly: true
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 50m
+              memory: 32Mi
+            limits:
+              cpu: 200m
+              memory: 64Mi
+      volumes:
+        - name: web-content
+          configMap:
+            name: payment-web
+        - name: nginx-config
+          configMap:
+            name: nginx-path-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-svc
+spec:
+  type: ClusterIP
+  selector:
+    app: payment-app
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ecommerce-ingress
+spec:
+  ingressClassName: azure-application-gateway
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Exact
+            backend:
+              service:
+                name: user-svc
+                port:
+                  number: 80
+          - path: /user
+            pathType: Prefix
+            backend:
+              service:
+                name: user-svc
+                port:
+                  number: 80
+          - path: /order
+            pathType: Prefix
+            backend:
+              service:
+                name: order-svc
+                port:
+                  number: 80
+          - path: /payment
+            pathType: Prefix
+            backend:
+              service:
+                name: payment-svc
+                port:
+                  number: 80
