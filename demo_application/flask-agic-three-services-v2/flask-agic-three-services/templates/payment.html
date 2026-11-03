@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Payment Service | CloudOps Demo</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin:0; min-height:100vh; display:grid; place-items:center; padding:24px;
+      font-family:Arial,Helvetica,sans-serif; color:#eef5ff;
+      background:radial-gradient(circle at 15% 15%, #f5b85c33, transparent 35%),linear-gradient(135deg,#0b1220,#101d32); }
+    main { width:min(760px,100%); padding:42px; border:1px solid #34465e; border-radius:22px;
+      background:rgba(20,35,58,.94); box-shadow:0 24px 70px #0006; }
+    .eyebrow { color:#f5b85c; font-size:12px; font-weight:bold; letter-spacing:2px; }
+    .icon { font-size:42px; margin-top:22px; }
+    h1 { margin:12px 0; font-size:clamp(34px,7vw,54px); }
+    .desc { color:#b4c3d8; line-height:1.7; }
+    .grid { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-top:28px; }
+    .feature { padding:18px; border:1px solid #34465e; border-radius:13px; background:#ffffff08; }
+    .feature h2 { margin:0 0 8px; font-size:16px; }
+    .feature p { margin:0; color:#aebdd2; line-height:1.6; font-size:13px; }
+    nav { display:flex; flex-wrap:wrap; gap:10px; margin-top:26px; }
+    nav a { color:#dceaff; text-decoration:none; border:1px solid #455a75; padding:10px 14px; border-radius:9px; }
+    nav a:hover { border-color:#f5b85c; }
+    .footer { margin-top:24px; padding-top:16px; border-top:1px solid #34465e; color:#91a3bb; font-size:12px; }
+    @media(max-width:560px) { main {padding:26px 20px} .grid {grid-template-columns:1fr} }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="eyebrow">FLASK MICROSERVICE · AKS · AGIC</div>
+    <div class="icon">💳</div>
+    <h1>Payment Service</h1>
+    <p class="desc">A dedicated page for payment service requests.</p>
+    <section class="grid"><article class="feature"><h2>Payment processing</h2><p>This demo page represents the payment processing endpoint.</p></article>
+<article class="feature"><h2>Transaction status</h2><p>Payment information is served by the Payment microservice.</p></article></section>
+    <nav aria-label="Navigate to demo services">
+      <a href="/user">User</a>
+      <a href="/order">Order</a>
+      <a href="/payment">Payment</a>
+    </nav>
+    <div class="footer">Served by its own Flask container · Health endpoint: <code>/health</code></div>
+  </main>
+</body>
+</html>

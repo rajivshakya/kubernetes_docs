@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b1220">
+  <title>CloudOps | Flask Demo</title>
+  <style>
+    :root {
+      --bg: #0b1220; --panel: rgba(19, 31, 52, .82); --line: rgba(148, 163, 184, .18);
+      --text: #edf4ff; --muted: #9aabc4; --cyan: #54d6e8; --blue: #729cff;
+      --green: #42d392; --shadow: 0 24px 70px rgba(0,0,0,.28);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(ellipse at 15% 5%, rgba(47,112,190,.24), transparent 34%),
+                  radial-gradient(ellipse at 90% 25%, rgba(28,190,184,.13), transparent 30%), var(--bg);
+    }
+    .wrap { width: min(1100px, calc(100% - 40px)); margin: auto; padding: 28px 0 42px; }
+    header { display:flex; align-items:center; justify-content:space-between; gap:18px; }
+    .brand { display:flex; align-items:center; gap:12px; font-weight:750; letter-spacing:.3px; }
+    .logo { width:42px; height:42px; display:grid; place-items:center; border-radius:13px;
+      color:#071321; font-size:21px; background:linear-gradient(135deg,var(--cyan),var(--blue)); }
+    .tag { border:1px solid var(--line); border-radius:999px; padding:8px 13px; color:var(--muted); font-size:12px; }
+    .hero { padding:86px 0 54px; max-width:780px; }
+    .eyebrow { color:var(--cyan); text-transform:uppercase; letter-spacing:2.2px; font-size:11px; font-weight:800; }
+    h1 { font-size:clamp(38px,7vw,68px); line-height:1.04; letter-spacing:-2.7px; margin:17px 0 18px; }
+    h1 span { background:linear-gradient(90deg,var(--cyan),#a8bdff); -webkit-background-clip:text; background-clip:text; color:transparent; }
+    .lead { color:var(--muted); font-size:clamp(15px,2vw,18px); line-height:1.75; max-width:660px; margin:0; }
+    .actions { display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:28px; }
+    .button { display:inline-flex; align-items:center; gap:9px; padding:12px 17px; border-radius:10px;
+      background:linear-gradient(100deg,#55d5e4,#86a9ff); color:#081321; font-weight:800; font-size:13px; text-decoration:none; }
+    .secondary { color:var(--text); border:1px solid var(--line); background:rgba(255,255,255,.035); }
+    .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+    .card { padding:22px; border:1px solid var(--line); border-radius:17px; background:var(--panel); box-shadow:var(--shadow); }
+    .icon { width:38px; height:38px; border-radius:11px; display:grid; place-items:center; background:rgba(84,214,232,.1); font-size:18px; }
+    .card h2 { margin:17px 0 8px; font-size:16px; }
+    .card p { margin:0; color:var(--muted); font-size:13px; line-height:1.65; }
+    .status { display:flex; align-items:center; gap:9px; margin-top:22px; padding:15px 17px; border-radius:12px;
+      border:1px solid var(--line); background:rgba(255,255,255,.035); color:var(--muted); font-size:13px; }
+    .dot { width:9px; height:9px; border-radius:50%; background:#eab85b; box-shadow:0 0 0 4px rgba(234,184,91,.12); }
+    .dot.ok { background:var(--green); box-shadow:0 0 0 4px rgba(66,211,146,.12); }
+    footer { display:flex; justify-content:space-between; gap:12px; margin-top:48px; padding-top:19px; border-top:1px solid var(--line); color:#71829d; font-size:12px; }
+    code { color:#b7d8ff; }
+    @media (max-width:720px) { .hero{padding:65px 0 38px} .grid{grid-template-columns:1fr} footer{flex-direction:column} }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <div class="brand"><div class="logo">☁</div><span>CLOUD<span style="color:#54d6e8">OPS</span> LAB</span></div>
+      <div class="tag">LIVE DEMO&nbsp; • &nbsp;PYTHON + FLASK</div>
+    </header>
+
+    <section class="hero">
+      <div class="eyebrow">Build · Ship · Run</div>
+      <h1>Your application.<br><span>Ready for the cloud.</span></h1>
+      <p class="lead">A lightweight Python Flask application, packaged with Docker and ready to run on your container platform. Simple architecture, clean delivery, and a health endpoint to verify the service.</p>
+      <div class="actions">
+        <a class="button" href="/health" target="_blank" rel="noopener">View health endpoint <span>↗</span></a>
+        <a class="button secondary" href="#architecture">Explore the demo ↓</a>
+      </div>
+      <div class="status" role="status" aria-live="polite">
+        <span class="dot" id="health-dot"></span>
+        <span id="health-text">Checking application health…</span>
+      </div>
+    </section>
+
+    <section id="architecture" class="grid" aria-label="Demo highlights">
+      <article class="card">
+        <div class="icon">🐍</div>
+        <h2>Python + Flask</h2>
+        <p>A minimal web application serving this responsive page and a JSON health-check endpoint.</p>
+      </article>
+      <article class="card">
+        <div class="icon">📦</div>
+        <h2>Docker packaged</h2>
+        <p>Dependencies are installed from <code>requirements.txt</code> and the app runs inside a container.</p>
+      </article>
+      <article class="card">
+        <div class="icon">☸</div>
+        <h2>Container ready</h2>
+        <p>Exposes port <code>5000</code>, making it straightforward to publish the image or deploy to Kubernetes.</p>
+      </article>
+    </section>
+
+    <footer>
+      <span>CloudOps Lab · Hands-on DevOps demonstration</span>
+      <span>Service: <code>python-flask-demo</code> &nbsp;|&nbsp; Port: <code>5000</code></span>
+    </footer>
+  </main>
+  <script>
+    fetch('/health', { cache: 'no-store' })
+      .then(response => {
+        if (!response.ok) throw new Error('Health check returned ' + response.status);
+        return response.json();
+      })
+      .then(data => {
+        if (data.status !== 'healthy') throw new Error('Service is not healthy');
+        document.getElementById('health-dot').classList.add('ok');
+        document.getElementById('health-text').textContent = 'Application is healthy · /health check passed';
+      })
+      .catch(() => {
+        document.getElementById('health-text').textContent = 'Health check unavailable · please verify the Flask service';
+      });
+  </script>
+</body>
+</html>
